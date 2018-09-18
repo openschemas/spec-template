@@ -41,7 +41,7 @@ bioschemaenv: &bioschemaenv
     command: |
         # If not set, define OPENBASES_CONTAINER
         if [ ! -n "${OPENBASES_CONTAINER:-}" ]; then
-            OPENBASES_CONTAINER="openbases/builder-bioschema"
+            OPENBASES_CONTAINER="openbases/builder-bioschema:dev"
         fi
         echo "Open Bases Bioschema builder is ${OPENBASES_CONTAINER}"
         # export to bash environment
