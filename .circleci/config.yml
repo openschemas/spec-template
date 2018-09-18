@@ -132,7 +132,7 @@ jobs:
           root: /tmp
           paths:
             - src
-            - paper
+            - specifications
 
   manifest:
     <<: *defaults
