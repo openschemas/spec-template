@@ -47,35 +47,20 @@ specifications/
 (with optionally more than one specification subfolder!)
 
 ### 4. Generate the specification files
-You now can generate your specification files with the provided Docker container! 
+You now can now push your content to Github, and connect to CircleCI to have
+the files generated automatically (and deployed to Github pages.) For the deployment
+to Github pages you need to:
 
-#### Ask for Help
-If you need to ask for help, just run the container:
+ 1. Create a second Github account to designate as your deployment bot
+ 2. Give the bot username write access to the repository (add them as a collaborator). You will likely need to open the invite link in a different browser than the one you are logged into with your typical Github username.
+ 3. Connect the project to CircleCI, and copy paste the project URL also into the second browser (where you can log in with your bot user).
+ 4. Click "Follow Project" as the bot, and then under Project Settings click on Checkout SSH Keys --> Create and add `<username>` user key
 
-```bash
-$ docker run openbases/builder-bioschema
-Usage:
+And under "Build Environment" make sure to add the variables for the `GITHUB_USER` and `GITHUB_EMAIL` to correspond with the **bot's**.  There are **no passwords** to be set here!
 
+This will deploy the site to Github pages for the repository, so you will finally need to turn on Github Pages (for the Github Pages branch) of your current repository. That's it! You can also [follow instructions](https://www.github.com/openbases/openbases-bioschema) to just generate the files locally with the 
+same Docker container. 
 
-         docker run <container> [demo|start|help]
-         docker run <container> demo
-         docker run <container> help
-         docker run -v /code/:/data <container> start
-
-         Commands:
-
-                help: show help and exit
-                run:   generate a specification, with your subdirectory with the
-                       specifications top level folder bound to /data
-                demo: show a demo generation using files in the container
-         
-         Options [run]:
-
-            --config CONFIG     configuration.yml file, defaults to configuration.yml in
-                                folder
-            --folder SPECS      folder with input specification subfolders
-            --output OUTFOLDER  folder to write output specification subfolders
-```
 
 ### What Happens in the Continuous Integration?
 
@@ -83,18 +68,14 @@ For a demo, you can see instructions in the [openbases/builder-bioschema](https:
 container in the continuous integration (although we can't run with binds so
 we copy files instead).
 
-
 ```bash
-$ docker run -it -v /tmp/src:/data openbases/builder-bioschema run -
+$ docker run -it -v /tmp/src:/data openbases/builder-bioschema run
 ```
 
-Output files, by default, are written to a folder docs/output_files in `/tmp/src`
+Output files, by default, are written to a folder docs/output_files in `/tmp/src`,
+which the container sees as `/data`
 
-```
-$ docker run -it -v $PWD:/data openbases/builder-bioschema run --config /data/specifications/configuration.yml --output /data/outfiles
-```
-
-Here are your files!
+The files typically look like this:
 
 ```bash
 $ tree outfiles/
@@ -106,37 +87,7 @@ outfiles/
     └── specification.html
 ```
 
-Now you know how to do your own!
-
 ### Contribute to bioschemas
 
-When you have your finished folder, fork the bioschemas repository,
-clone your fork, checkout a new branch, and add your folder
-to the folder "specifications". Then issue a pull request!
-
-```bash
-git clone https://www.github.com/<username>/specifications
-cd specifications
-git checkout -b add/spec-datacatalog
-```
-add your folder, e.g. DataCatalog, to "specifications"
-
-```bash
-cp -R <generation_folder>/specifications/DataCatalog $PWD
-git add DataCatalog
-```
-
-Then open a pull request to the [main repository](https://github.com/BioSchemas/specifications).
-
-## Can we make this easier?
-
-Yes! We will provide a continuous integration template (soon) for you to do this,
-likely in the next few days.
-
-## Development
-
-Build the container
-
-```bash
-$ docker build -t openbases/builder-bioschemas .
-```
+I'm not actually sure how to do this, but when someone responds I hope they can point
+me to the right spot. 

@@ -41,11 +41,16 @@ bioschemaenv: &bioschemaenv
     command: |
         # If not set, define OPENBASES_CONTAINER
         if [ ! -n "${OPENBASES_CONTAINER:-}" ]; then
-            OPENBASES_CONTAINER="openbases/openbases-bioschema"
+            OPENBASES_CONTAINER="openbases/builder-bioschema:dev"
+        fi
+        # If not set, define REPO_VERSION
+        if [ ! -n "${REPO_VERSION:-}" ]; then
+            REPO_VERSION=$(echo "${CIRCLE_SHA1}" | cut -c1-10)
         fi
         echo "Open Bases Bioschema builder is ${OPENBASES_CONTAINER}"
         # export to bash environment
         echo "export OPENBASES_CONTAINER=${OPENBASES_CONTAINER}" >> ${BASH_ENV}
+        echo "export REPO_VERSION=${REPO_VERSION}" >> ${BASH_ENV}
         cat ${BASH_ENV}
 
 githubsetup: &githubsetup
@@ -74,20 +79,26 @@ bioschema: &bioschema
         echo "1. Starting OpenBases Bioschema Builder!"
         echo "docker run --name bioschema  --entrypoint bash -dt ${OPENBASES_CONTAINER}"
         docker run --name bioschema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
+        docker exec bioschema rm -rf /data/*
+        docker exec bioschema mkdir --p /data/specifications
         echo "2. Copying specification files for Open Bases Bioschema..."
-        echo "docker cp ./specifications/. bioschema:/data/"
-        docker cp ./specifications/. bioschema:/data/
-        echo "3. Go Robot Go, generate the files!"
-        echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --outfolder /data/output"
-        docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --outfolder /data/output
+        echo "docker cp ./specifications/. bioschema:/data/specifications"
+        docker cp ./specifications/. bioschema:/data/specifications
+        echo "docker cp ./specifications/configuration.yml bioschema:/data/configuration.yml"
+        docker cp ./specifications/configuration.yml bioschema:/data/configuration.yml
+        echo "3. Generating specification files!"
+        echo "Files in /data"
+        docker exec bioschema ls /data
+        echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output"
+        docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output
         echo "4. Obtaining finished files"
         mkdir -p /tmp/specifications
         echo "docker cp bioschema:/data/output/. /tmp/specifications"
         docker cp bioschema:/data/output/. /tmp/specifications/
         echo "5. Creating archive."
         echo "tar czf specs.tar.gz /tmp/specifications"
-        tar "czf specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
-        mv "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
+        tar czf "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
+        mv "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
         echo "6. Stopping bioschema..."
         docker stop bioschema
         echo "Contents of /tmp"
@@ -105,7 +116,7 @@ jobs:
   setup:
     <<: *defaults
     steps:
-      - run: *pdfenv
+      - run: *bioschemaenv
       - run: *install
       - run: *githubsetup
 
@@ -121,14 +132,14 @@ jobs:
           root: /tmp
           paths:
             - src
-            - paper
+            - specifications
 
   manifest:
     <<: *defaults
     steps:
       - attach_workspace:
           at: /tmp
-      - run: *pdfenv
+      - run: *bioschemaenv
       - run: *githubsetup
       - run: *install
       - run:
@@ -153,10 +164,11 @@ jobs:
                     git checkout gh-pages || git checkout --orphan gh-pages
                     mkdir -p ../out-old
                     mkdir -p archive
-                    for ext in tar.gz yml tsv html
+                    # Keep archive contents
+                    for ext in tar.gz
                         do
-                        if /bin/bash -c "ls *.${ext}" 1> /dev/null 2>&1; then
-                                /bin/bash -c "cp *.${ext} ../out-old/" 
+                        if /bin/bash -c "ls archive/*.${ext}" 1> /dev/null 2>&1; then
+                                /bin/bash -c "cp archive/*.${ext} ../out-old/" 
                         fi
                     done                    
                     git rm -rf .
@@ -165,17 +177,22 @@ jobs:
                     # Copy Github pages here
                     cp -R ../master/* $PWD
                     # Copy back previous files to archive
-                    for ext in tar.gz
-                        do
-                           if /bin/bash -c "ls ../out-old/*.${ext}" 1> /dev/null 2>&1; then
-                               /bin/bash -c "cp ../out-old/*.${ext} ${PWD}/archive/"
-                        fi
-                    done
+                    mv ../out-old $PWD/archive
                     echo "2. Preparing template..."
-
-                    # Need to keep latest also as tag
-                    cp /tmp/specifications/specs-${DOCKER_TAG}.tar.gz specs-latest.tar.gz
-
+                    # Add latest to archive
+                    cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
+                    cp archive/specs-${REPO_VERSION}.tar.gz archive/specs-latest.tar.gz
+                    # Add build folders to devSpecs
+                    for folder in `ls/tmp/specifications`
+                        do
+                            OLDPATH="_devSpecs/${folder}"
+                            if [[ -d "${OLDPATH}" ]];
+                                then
+                                    rm -rf ${OLDPATH}
+                            fi
+                            echo "Moving /tmp/specifications/${folder} to _devSpecs"
+                            mv "/tmp/specifications/${folder}" "_devSpecs/${folder}"
+                    done
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
