@@ -92,7 +92,7 @@ bioschema: &bioschema
         docker cp bioschema:/data/output/. /tmp/specifications/
         echo "5. Creating archive."
         echo "tar czf specs.tar.gz /tmp/specifications"
-        tar "czf specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
+        tar czf "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
         mv "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
         echo "6. Stopping bioschema..."
         docker stop bioschema
