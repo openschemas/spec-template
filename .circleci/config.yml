@@ -76,7 +76,9 @@ bioschema: &bioschema
         docker run --name bioschema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
         echo "2. Copying specification files for Open Bases Bioschema..."
         echo "docker cp ./specifications/. bioschema:/data/"
-        docker cp ./specifications/. bioschema:/data/
+        # This would normally be mounted over
+        docker exec bioschema rm -rf /data/*
+        docker exec bioschema mkdir --p /data/specifications
         docker cp ./specifications/. bioschema:/data/
         echo "3. Generating specification files!"
         echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --output /data/output"
