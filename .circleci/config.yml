@@ -7,13 +7,13 @@
 
 # Variables you can customize
 # OPENBASES_CONTAINER: is the container that will be used, see default section
-# OPENBASES_PAPER_ARGS: are any special arguments to pass to the openbases-pdf container
 
 # The following variables are optional and will give you
 # additional deployments / functionality.
 
 # GITHUB_USER
-# GITHUB_EMAIL if defined, you can deploy your paper back to Github pages.
+# GITHUB_EMAIL if defined, you can deploy your archive and site back to Github pages.
+# REPO_VERSION: derived from the sha, for naming the archive
 
 ################################################################################
 # Functions
@@ -143,7 +143,7 @@ jobs:
       - run: *githubsetup
       - run: *install
       - run:
-          name: Generate Paper Manifest
+          name: Generate Archive of Specs, and Deploy to gh-pages
           no_output_timeout: 40m
           command: |
             source ${BASH_ENV}
@@ -183,7 +183,7 @@ jobs:
                     cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
                     cp archive/specs-${REPO_VERSION}.tar.gz archive/specs-latest.tar.gz
                     # Add build folders to devSpecs
-                    for folder in `ls/tmp/specifications`
+                    for folder in `ls /tmp/specifications`
                         do
                             OLDPATH="_devSpecs/${folder}"
                             if [[ -d "${OLDPATH}" ]];
