@@ -176,6 +176,7 @@ jobs:
                     mkdir -p .circleci && cp -a ../.circleci/. .circleci/.
                     # Copy Github pages here
                     cp -R ../bioschemas.github.io-master/* $PWD
+                    rm -rf CNAME
                     # Copy back previous files to archive
                     mv ../out-old $PWD/archive
                     echo "2. Preparing template..."
