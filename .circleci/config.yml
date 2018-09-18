@@ -77,8 +77,11 @@ bioschema: &bioschema
         echo "2. Copying specification files for Open Bases Bioschema..."
         echo "docker cp ./specifications/. bioschema:/data/"
         docker cp ./specifications/. bioschema:/data/
+        docker cp ./specifications/. bioschema:/data/
         echo "3. Generating specification files!"
         echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --output /data/output"
+        echo "Files in /data"
+        docker exec ls /data
         docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --output /data/output
         echo "4. Obtaining finished files"
         mkdir -p /tmp/specifications
