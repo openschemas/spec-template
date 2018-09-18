@@ -1,0 +1,211 @@
+# This is a CircleCI configuration that you can add to your Github repository,
+# and connect to CircleCI to generate your bioschema files! If you don't
+# define any custom variables, your files will be generated and available
+# as artifacts. If you define the GITHUB variables for a bot, we can put
+# them back to Github Pages for more programmatic use (and version control
+# archive)
+
+# Variables you can customize
+# OPENBASES_CONTAINER: is the container that will be used, see default section
+# OPENBASES_PAPER_ARGS: are any special arguments to pass to the openbases-pdf container
+
+# The following variables are optional and will give you
+# additional deployments / functionality.
+
+# GITHUB_USER
+# GITHUB_EMAIL if defined, you can deploy your paper back to Github pages.
+
+################################################################################
+# Functions
+################################################################################
+
+# Defaults
+defaults: &defaults
+  docker:
+    - image: docker:18.01.0-ce-git
+  working_directory: /tmp/src
+
+# Installation
+install: &install
+    name: Install parallel gzip, gettext, python3, openbases, and jq
+    command: |
+        apk add --no-cache pigz python3 gettext jq
+
+# Environment
+sourceenv: &sourceenv
+    name: Source environment variables from the BASH_ENV
+    command: source $BASH_ENV 
+
+bioschemaenv: &bioschemaenv
+    name: Define container and open bases names
+    command: |
+        # If not set, define OPENBASES_CONTAINER
+        if [ ! -n "${OPENBASES_CONTAINER:-}" ]; then
+            OPENBASES_CONTAINER="openbases/openbases-bioschema"
+        fi
+        echo "Open Bases Bioschema builder is ${OPENBASES_CONTAINER}"
+        # export to bash environment
+        echo "export OPENBASES_CONTAINER=${OPENBASES_CONTAINER}" >> ${BASH_ENV}
+        cat ${BASH_ENV}
+
+githubsetup: &githubsetup
+    name: Prepare Github account credentials
+    command: |
+        # Only proceed if we minimally have a Github email
+        if [[ -n "${GITHUB_EMAIL:-}" ]];
+            then
+                echo "Preparing Github account credentials"
+                git config --global user.email $GITHUB_EMAIL
+                # If username is defined, use it (otherwuse use circle project)
+                if [[ -n "${GITHUB_USER:-}" ]];
+                    then
+                    git config --global user.name $GITHUB_USER
+                else
+                    git config --global user.name $CIRCLE_PROJECT_USERNAME
+                fi
+        fi
+
+
+bioschema: &bioschema
+    name: use openbases/openbases-bioschema docker container to generate specifications
+    command: |
+        source ${BASH_ENV}
+        cd /tmp/src
+        echo "1. Starting OpenBases Bioschema Builder!"
+        echo "docker run --name bioschema  --entrypoint bash -dt ${OPENBASES_CONTAINER}"
+        docker run --name bioschema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
+        echo "2. Copying specification files for Open Bases Bioschema..."
+        echo "docker cp ./specifications/. bioschema:/data/"
+        docker cp ./specifications/. bioschema:/data/
+        echo "3. Go Robot Go, generate the files!"
+        echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --outfolder /data/output"
+        docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data --outfolder /data/output
+        echo "4. Obtaining finished files"
+        mkdir -p /tmp/specifications
+        echo "docker cp bioschema:/data/output/. /tmp/specifications"
+        docker cp bioschema:/data/output/. /tmp/specifications/
+        echo "5. Creating archive."
+        echo "tar czf specs.tar.gz /tmp/specifications"
+        tar "czf specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
+        mv "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
+        echo "6. Stopping bioschema..."
+        docker stop bioschema
+        echo "Contents of /tmp"
+        ls /tmp
+        echo "Contents of /tmp/specifications"
+        ls /tmp/specifications
+
+################################################################################
+# Jobs
+################################################################################
+
+
+version: 2
+jobs:
+  setup:
+    <<: *defaults
+    steps:
+      - run: *pdfenv
+      - run: *install
+      - run: *githubsetup
+
+  build:
+    <<: *defaults
+    steps:
+      - run: *install
+      - setup_remote_docker
+      - checkout
+      - run: *bioschemaenv
+      - run: *bioschema
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - src
+            - paper
+
+  manifest:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run: *pdfenv
+      - run: *githubsetup
+      - run: *install
+      - run:
+          name: Generate Paper Manifest
+          no_output_timeout: 40m
+          command: |
+            source ${BASH_ENV}
+            ls /tmp
+            ls /tmp/specifications
+            mkdir -p ${HOME}/.ssh
+            if [[ -n "${GITHUB_EMAIL:-}" ]];
+                then
+                    echo "=== Deploying site to Github Pages ==="
+                    echo "1. Checking out Github pages branch"
+                    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+                    git clone "git@github.com:${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git" out
+                    wget https://github.com/BioSchemas/bioschemas.github.io/archive/master.zip
+                    unzip -l master.zip
+                    unzip master.zip
+                    cd out
+                    # either checkout github pages, or create orphan
+                    git checkout gh-pages || git checkout --orphan gh-pages
+                    mkdir -p ../out-old
+                    mkdir -p archive
+                    for ext in tar.gz yml tsv html
+                        do
+                        if /bin/bash -c "ls *.${ext}" 1> /dev/null 2>&1; then
+                                /bin/bash -c "cp *.${ext} ../out-old/" 
+                        fi
+                    done                    
+                    git rm -rf .
+                    # ensure that github pages are ignored
+                    mkdir -p .circleci && cp -a ../.circleci/. .circleci/.
+                    # Copy Github pages here
+                    cp -R ../master/* $PWD
+                    # Copy back previous files to archive
+                    for ext in tar.gz
+                        do
+                           if /bin/bash -c "ls ../out-old/*.${ext}" 1> /dev/null 2>&1; then
+                               /bin/bash -c "cp ../out-old/*.${ext} ${PWD}/archive/"
+                        fi
+                    done
+                    echo "2. Preparing template..."
+
+                    # Need to keep latest also as tag
+                    cp /tmp/specifications/specs-${DOCKER_TAG}.tar.gz specs-latest.tar.gz
+
+                    git add -A;
+                    git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
+                    git push origin gh-pages
+            else
+                echo "GITHUB_EMAIL not set, skipping manifest deploy to Github pages"
+            fi
+
+
+################################################################################
+# Workflows
+################################################################################
+
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: gh-pages
+            tags:
+              only: /.*/
+
+      # Push the manifest back to Github pages
+      - manifest:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
