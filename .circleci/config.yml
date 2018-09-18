@@ -43,9 +43,14 @@ bioschemaenv: &bioschemaenv
         if [ ! -n "${OPENBASES_CONTAINER:-}" ]; then
             OPENBASES_CONTAINER="openbases/builder-bioschema:dev"
         fi
+        # If not set, define REPO_VERSION
+        if [ ! -n "${REPO_VERSION:-}" ]; then
+            REPO_VERSION=$(echo "${CIRCLE_SHA1}" | cut -c1-10)
+        fi
         echo "Open Bases Bioschema builder is ${OPENBASES_CONTAINER}"
         # export to bash environment
         echo "export OPENBASES_CONTAINER=${OPENBASES_CONTAINER}" >> ${BASH_ENV}
+        echo "export REPO_VERSION=${REPO_VERSION}" >> ${BASH_ENV}
         cat ${BASH_ENV}
 
 githubsetup: &githubsetup
@@ -92,8 +97,8 @@ bioschema: &bioschema
         docker cp bioschema:/data/output/. /tmp/specifications/
         echo "5. Creating archive."
         echo "tar czf specs.tar.gz /tmp/specifications"
-        tar czf "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
-        mv "specs-${DOCKER_TAG}.tar.gz" /tmp/specifications
+        tar czf "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
+        mv "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
         echo "6. Stopping bioschema..."
         docker stop bioschema
         echo "Contents of /tmp"
@@ -180,7 +185,7 @@ jobs:
                     echo "2. Preparing template..."
 
                     # Need to keep latest also as tag
-                    cp /tmp/specifications/specs-${DOCKER_TAG}.tar.gz specs-latest.tar.gz
+                    cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz /tmp/specifications/specs-latest.tar.gz
 
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
