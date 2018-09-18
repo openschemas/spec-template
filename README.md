@@ -68,7 +68,6 @@ For a demo, you can see instructions in the [openbases/builder-bioschema](https:
 container in the continuous integration (although we can't run with binds so
 we copy files instead).
 
-
 ```bash
 $ docker run -it -v /tmp/src:/data openbases/builder-bioschema run
 ```
