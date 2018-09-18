@@ -1,14 +1,25 @@
-# Open Bases Bioschema Template
+# Bioschema Container
 
-This is an [openbases](https://openbases.github.io) builder
-to generate a bioschemas specification using [map2model](https://www.github.com/vsoch/map2model)
-to generate a specification for contribution to [bioschemas](https://www.github.com/openbases/specifications). You can use the container to generate your specification as follows:
+This is an instance of an [openbases](https://openbases.github.io) builder
+to generate a bioschemas specification using [map2model](https://www.github.com/vsoch/map2model) for the following entities:
+
+ - [Container](specifications/Container)
+ - [ContainerImage](specifications/ContainerImage)
+ - [ContainerRecipe](specifications/ContainerRecipe)
+ - [ContainerDistribution](specifications/ContainerDistribution)
+
+**under development**
+
+For the map2model repository linked above, see the  `remove-gdrive` 
+branch for the code built into container)
+to generate specifications for contribution to 
+[bioschemas](https://www.github.com/openbases/specifications). 
+I did the following to generate my container.
 
  1. Fill in the templates provided on Google Drive, and download as tsv
- 2. Run the [openbases/openbases-bioschema]() container to generate your specification files
- 3. Contribute your specification by way of a pull request to [bioschemas](https://www.github.com/openbases/specifications)
-
-That's it! More information coming soon.
+ 2. I added them to the [specifications](specifications) folder here under a subfolder called "Container", along with an entry in [configuration.yml](configuration.yml).
+ 3. I then hooked up to continuous integration, which automatically ran the [openbases/openbases-bioschema](https://hub.docker.com/r/openbases/builder-bioschema) container that sent my files back to Github pages.
+ 4. I could then contribute my files via a pull request to [bioschemas](https://www.github.com/openbases/specifications).
 
 ## Usage
 
@@ -66,30 +77,20 @@ Usage:
             --output OUTFOLDER  folder to write output specification subfolders
 ```
 
-### See a demo
-There are files provided in the container (the same demo ones in this folder)
-that you can use (without mounting a volume) to see what output should look like:
+### What Happens in the Continuous Integration?
+
+For a demo, you can see instructions in the [openbases/builder-bioschema](https://www.github.com/openbases/builder-bioschema) repository. This is how we use that
+container in the continuous integration (although we can't run with binds so
+we copy files instead).
+
 
 ```bash
-$ docker run -it openbases/builder-bioschema demo
+$ docker run -it -v /tmp/src:/data openbases/builder-bioschema run -
 ```
 
-### See an Example
-You can next try the local files provided in this repository to learn how to mount
-the volume correctly. If you haven't already, clone the repository and go for it!
-
-```bash
-$ git clone https://www.github.com/openbases/builder-bioschema
-$ cd builder-bioschema
-```
-
-Let's also going to set the output folders and input configuration file to
-the ones we have locally, because it's likely you might have this setup. Importantly,
-since we are binding the $PWD to the container, we need to reference paths in the
-$PWD relative to /data in the container!
+Output files, by default, are written to a folder docs/output_files in `/tmp/src`
 
 ```
-mkdir -p outfiles
 $ docker run -it -v $PWD:/data openbases/builder-bioschema run --config /data/specifications/configuration.yml --output /data/outfiles
 ```
 
