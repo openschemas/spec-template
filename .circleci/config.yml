@@ -164,10 +164,11 @@ jobs:
                     git checkout gh-pages || git checkout --orphan gh-pages
                     mkdir -p ../out-old
                     mkdir -p archive
-                    for ext in tar.gz yml tsv html
+                    # Keep archive contents
+                    for ext in tar.gz
                         do
-                        if /bin/bash -c "ls *.${ext}" 1> /dev/null 2>&1; then
-                                /bin/bash -c "cp *.${ext} ../out-old/" 
+                        if /bin/bash -c "ls archive/*.${ext}" 1> /dev/null 2>&1; then
+                                /bin/bash -c "cp archive/*.${ext} ../out-old/" 
                         fi
                     done                    
                     git rm -rf .
@@ -176,17 +177,22 @@ jobs:
                     # Copy Github pages here
                     cp -R ../master/* $PWD
                     # Copy back previous files to archive
-                    for ext in tar.gz
-                        do
-                           if /bin/bash -c "ls ../out-old/*.${ext}" 1> /dev/null 2>&1; then
-                               /bin/bash -c "cp ../out-old/*.${ext} ${PWD}/archive/"
-                        fi
-                    done
+                    mv ../out-old $PWD/archive
                     echo "2. Preparing template..."
-
-                    # Need to keep latest also as tag
-                    cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz /tmp/specifications/specs-latest.tar.gz
-
+                    # Add latest to archive
+                    cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
+                    cp archive/specs-${REPO_VERSION}.tar.gz archive/specs-latest.tar.gz
+                    # Add build folders to devSpecs
+                    for folder in `ls/tmp/specifications`
+                        do
+                            OLDPATH="_devSpecs/${folder}"
+                            if [[ -d "${OLDPATH}" ]];
+                                then
+                                    rm -rf ${OLDPATH}
+                            fi
+                            echo "Moving /tmp/specifications/${folder} to _devSpecs"
+                            mv "/tmp/specifications/${folder}" "_devSpecs/${folder}"
+                    done
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
