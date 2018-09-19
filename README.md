@@ -1,4 +1,6 @@
-# Bioschema Container
+# OpenSchema Container
+
+[![CircleCI](https://circleci.com/gh/openschemas/spec-container.svg?style=svg)](https://circleci.com/gh/openschemas/spec-container)
 
 This is an instance of an [openbases](https://openbases.github.io) builder
 to generate a bioschemas specification using [map2model](https://www.github.com/vsoch/map2model) for the following entities:
