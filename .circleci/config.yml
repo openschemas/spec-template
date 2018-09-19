@@ -36,18 +36,18 @@ sourceenv: &sourceenv
     name: Source environment variables from the BASH_ENV
     command: source $BASH_ENV 
 
-bioschemaenv: &bioschemaenv
+schemaenv: &schemaenv
     name: Define container and open bases names
     command: |
         # If not set, define OPENBASES_CONTAINER
         if [ ! -n "${OPENBASES_CONTAINER:-}" ]; then
-            OPENBASES_CONTAINER="openbases/builder-bioschema:dev"
+            OPENBASES_CONTAINER="openschemas/schema-builder"
         fi
         # If not set, define REPO_VERSION
         if [ ! -n "${REPO_VERSION:-}" ]; then
             REPO_VERSION=$(echo "${CIRCLE_SHA1}" | cut -c1-10)
         fi
-        echo "Open Bases Bioschema builder is ${OPENBASES_CONTAINER}"
+        echo "Open Bases OpenSchema builder is ${OPENBASES_CONTAINER}"
         # export to bash environment
         echo "export OPENBASES_CONTAINER=${OPENBASES_CONTAINER}" >> ${BASH_ENV}
         echo "export REPO_VERSION=${REPO_VERSION}" >> ${BASH_ENV}
@@ -71,36 +71,36 @@ githubsetup: &githubsetup
         fi
 
 
-bioschema: &bioschema
-    name: use openbases/openbases-bioschema docker container to generate specifications
+schema: &schema
+    name: use openschema/schema-builder docker container to generate specifications
     command: |
         source ${BASH_ENV}
         cd /tmp/src
-        echo "1. Starting OpenBases Bioschema Builder!"
-        echo "docker run --name bioschema  --entrypoint bash -dt ${OPENBASES_CONTAINER}"
-        docker run --name bioschema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
-        docker exec bioschema rm -rf /data/*
-        docker exec bioschema mkdir --p /data/specifications
-        echo "2. Copying specification files for Open Bases Bioschema..."
-        echo "docker cp ./specifications/. bioschema:/data/specifications"
-        docker cp ./specifications/. bioschema:/data/specifications
-        echo "docker cp ./specifications/configuration.yml bioschema:/data/configuration.yml"
-        docker cp ./specifications/configuration.yml bioschema:/data/configuration.yml
+        echo "1. Starting OpenBases Schema Builder!"
+        echo "docker run --name schema  --entrypoint bash -dt ${OPENBASES_CONTAINER}"
+        docker run --name schema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
+        docker exec schema rm -rf /data/*
+        docker exec schema mkdir --p /data/specifications
+        echo "2. Copying specification files for Open Bases schema..."
+        echo "docker cp ./specifications/. schema:/data/specifications"
+        docker cp ./specifications/. schema:/data/specifications
+        echo "docker cp ./specifications/configuration.yml schema:/data/configuration.yml"
+        docker cp ./specifications/configuration.yml schema:/data/configuration.yml
         echo "3. Generating specification files!"
         echo "Files in /data"
-        docker exec bioschema ls /data
-        echo "docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output"
-        docker exec bioschema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output
+        docker exec schema ls /data
+        echo "docker exec schema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output"
+        docker exec schema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output
         echo "4. Obtaining finished files"
         mkdir -p /tmp/specifications
-        echo "docker cp bioschema:/data/output/. /tmp/specifications"
-        docker cp bioschema:/data/output/. /tmp/specifications/
+        echo "docker cp schema:/data/output/. /tmp/specifications"
+        docker cp schema:/data/output/. /tmp/specifications/
         echo "5. Creating archive."
         echo "tar czf specs.tar.gz /tmp/specifications"
         tar czf "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
         mv "specs-${REPO_VERSION}.tar.gz" /tmp/specifications
-        echo "6. Stopping bioschema..."
-        docker stop bioschema
+        echo "6. Stopping schema container..."
+        docker stop schema
         echo "Contents of /tmp"
         ls /tmp
         echo "Contents of /tmp/specifications"
@@ -116,7 +116,7 @@ jobs:
   setup:
     <<: *defaults
     steps:
-      - run: *bioschemaenv
+      - run: *schemaenv
       - run: *install
       - run: *githubsetup
 
@@ -126,8 +126,8 @@ jobs:
       - run: *install
       - setup_remote_docker
       - checkout
-      - run: *bioschemaenv
-      - run: *bioschema
+      - run: *schemaenv
+      - run: *schema
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -139,7 +139,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
-      - run: *bioschemaenv
+      - run: *schemaenv
       - run: *githubsetup
       - run: *install
       - run:
@@ -156,9 +156,6 @@ jobs:
                     echo "1. Checking out Github pages branch"
                     ssh-keyscan -H github.com >> ~/.ssh/known_hosts
                     git clone "git@github.com:${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git" out
-                    wget https://github.com/BioSchemas/bioschemas.github.io/archive/master.zip
-                    unzip -l master.zip
-                    unzip master.zip
                     cd out
                     # either checkout github pages, or create orphan
                     git checkout gh-pages || git checkout --orphan gh-pages
@@ -175,24 +172,21 @@ jobs:
                     # ensure that github pages are ignored
                     mkdir -p .circleci && cp -a ../.circleci/. .circleci/.
                     # Copy Github pages here
-                    cp -R ../bioschemas.github.io-master/* $PWD
-                    rm -rf CNAME
                     # Copy back previous files to archive
                     mv ../out-old $PWD/archive
                     echo "2. Preparing template..."
                     # Add latest to archive
                     cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
                     cp archive/specs-${REPO_VERSION}.tar.gz archive/specs-latest.tar.gz
-                    # Add build folders to devSpecs
+                    # Add build folders
                     for folder in `ls /tmp/specifications`
                         do
-                            OLDPATH="_devSpecs/${folder}"
-                            if [[ -d "${OLDPATH}" ]];
+                            if [[ -d "${folder}" ]];
                                 then
-                                    rm -rf ${OLDPATH}
+                                    rm -rf ${folder}
                             fi
-                            echo "Moving /tmp/specifications/${folder} to _devSpecs"
-                            mv "/tmp/specifications/${folder}" "_devSpecs/${folder}"
+                            echo "Moving /tmp/specifications/${folder} to ${PWD}"
+                            mv "/tmp/specifications/${folder}" "${folder}"
                     done
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
