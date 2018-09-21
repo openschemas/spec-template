@@ -1,7 +1,7 @@
 # OpenSchema Specification Builder Template
 
 <div style="max-width:200px">
-<img src=https://openschemas.github.io/assets/images/logos/openschemas/logo_hexagon.png">
+<img src="https://openschemas.github.io/assets/images/logos/openschemas/logo_hexagon.png">
 </div>
 
 This is a template for the [openschemas/schema-builder](https://www.github.com/openschemas/schema-builder)
