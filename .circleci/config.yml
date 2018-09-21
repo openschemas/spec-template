@@ -159,14 +159,15 @@ jobs:
                     cd out
                     # either checkout github pages, or create orphan
                     git checkout gh-pages || git checkout --orphan gh-pages
-                    mkdir -p ../out-old
+                    mkdir -p ../out-old/archive
                     mkdir -p archive
                     mkdir -p specifications
+                    mv specifications ../out-old/specifications
                     # Keep archive contents
                     for ext in tar.gz
                         do
                         if /bin/bash -c "ls archive/*.${ext}" 1> /dev/null 2>&1; then
-                                /bin/bash -c "cp archive/*.${ext} ../out-old/" 
+                                /bin/bash -c "cp archive/*.${ext} ../out-old/archive" 
                         fi
                     done                    
                     git rm -rf .
@@ -175,6 +176,7 @@ jobs:
                     # Copy Github pages here
                     # Copy back previous files to archive
                     mv ../out-old $PWD/archive
+                    mv ../out-old/specifications ${PWD}/specifications
                     echo "2. Preparing template..."
                     # Add latest to archive
                     mv /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
@@ -182,12 +184,12 @@ jobs:
                     # Add build folders
                     for folder in `ls /tmp/specifications`
                         do
-                            if [[ -d "${folder}" ]];
+                            if [[ -d "specifications/${folder}" ]];
                                 then
-                                    rm -rf ${folder}
+                                    rm -rf specifications/${folder}
                             fi
-                            echo "Moving /tmp/specifications/${folder} to ${PWD}/specifications"
-                            mv "/tmp/specifications/${folder}" "${PWD}/specifications/${folder}"
+                            echo "Moving /tmp/specifications/${folder} to specifications"
+                            mv "/tmp/specifications/${folder}" "specifications/${folder}"
                     done
                     # Copy jekyll templates to static
                     cp -R /tmp/src/.circleci/_includes _includes
