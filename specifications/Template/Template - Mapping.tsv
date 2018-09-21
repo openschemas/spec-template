@@ -12,7 +12,7 @@ sameAs	URL	URL of a reference Web page that unambiguously indicates the item's i
 subjectOf	CreativeWork or  Event	A CreativeWork or Event about this Thing.. Inverse property: about.							
 url	URL	URL of the item.			URL of the container, typically associated with a registry that shows the ContainerRecipe, vulnerability scans, and other metadata. This property can be used on a page listing many containers to indicate each individual container's page.	Minimum	ONE		
 Properties from SoftwareApplication									
-applicationCategory	Text	Type of software application, e.g. 'Game, Multimedia'.			Type of software e.g. database, tool, service. **Note:** Bioschemas have removed [URL](http://schema.org/URL) from the Expected Types.	Optional	MANY	Please indicate the container technology in all lowercase	{   "@type": ["SoftwareApplication", "Container"],   "applicationCategory": "singularity" }
+applicationCategory	Text	Type of software application, e.g. 'Game, Multimedia'.			Type of software e.g. database, tool, service. **Note:** Bioschemas have removed [URL](http://schema.org/URL) from the Expected Types.	Optional	MANY	Please indicate the container technology in all lowercase	{   "@type": ["SoftwareApplication", "Template"],   "applicationCategory": "singularity" }
 applicationSubCategory	Text	Subcategory of the application, e.g. 'Scientific Container'.							
 applicationSuite	Text	The name of the application suite to which the application belongs, if applicable (e.g. Excel belongs to Office).							
 availableOnDevice	Text	Device required to run the application. Used in cases where a specific make/model is required to run the application. Supersedes device.			Particular containers may require GPU on the host, for example.				

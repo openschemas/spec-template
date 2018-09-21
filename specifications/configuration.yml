@@ -1,13 +1,8 @@
 specifications:
-- name: Container
+- name: Template
   status: revision
   spec_type: Profile
-  use_cases_url: https://www.github.com/openschemas/spec-container
+  use_cases_url: https://www.github.com/openschemas/spec-template
   version: 0.0.1
-  parent_type: SoftwareApplication
-- name: DataCatalog 
-  status: revision
-  spec_type: Profile
-  use_cases_url: https://www.github.com/openschemas/spec-container
-  version: 0.0.1
-  parent_type: CreativeWork
+  parent_type: Thing
+- name: Template
