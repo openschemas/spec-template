@@ -164,10 +164,13 @@ jobs:
                     mkdir -p specifications
                     mv specifications ../out-old/
                     # Keep archive contents
-                    for ext in tar.gz
+                    for ext in tar.gz html
                         do
                         if /bin/bash -c "ls archive/*.${ext}" 1> /dev/null 2>&1; then
                                 /bin/bash -c "cp archive/*.${ext} ../out-old/archive" 
+                        fi
+                        if /bin/bash -c "ls _specifications/*.${ext}" 1> /dev/null 2>&1; then
+                                /bin/bash -c "cp _specifications/*.${ext} ../out-old/specifications/" 
                         fi
                     done                    
                     git rm -rf .
@@ -175,7 +178,8 @@ jobs:
                     mkdir -p .circleci && cp -a ../.circleci/. .circleci/.
                     # Copy back previous files to archive
                     mv ../out-old/archive ${PWD}
-                    mv ../out-old/specifications ${PWD}
+                    mkdir -p _specifications
+                    mv ../out-old/specifications/*.html _specifications/
                     mkdir -p _yaml
                     echo "2. Preparing template..."
                     # Add latest to archive
@@ -184,20 +188,19 @@ jobs:
                     # Add build folders
                     for folder in `ls /tmp/specifications`
                         do
-                            if [[ -f "specifications/${folder}" ]];
+                            if [[ -f "_specifications/${folder}.html" ]];
                                 then
-                                    rm -rf specifications/${folder}
+                                    rm _specifications/${folder}.html
                             fi
-                            echo "Moving /tmp/specifications/${folder} to specifications"
-                            mv "/tmp/specifications/${folder}" "specifications/${folder}"
-                            mv "specifications/${folder}/${folder}.yml" _yaml
+                            echo "Moving /tmp/specifications/${folder} to _specifications"
+                            mv "/tmp/specifications/${folder}/${folder}.html" "_specifications/"
+                            mv "/tmp/specifications/${folder}/${folder}.yml" _yaml/
                     done
                     # Copy jekyll templates to static
                     cp -R /tmp/src/.circleci/_includes _includes
                     cp -R /tmp/src/.circleci/_layouts _layouts
                     cp /tmp/src/.circleci/_config.yml _config.yml
                     cp /tmp/src/.circleci/specifications.md specifications.md
-                    mv specifications _specifications 
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
