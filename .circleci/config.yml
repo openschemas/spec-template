@@ -183,12 +183,13 @@ jobs:
                     # Add build folders
                     for folder in `ls /tmp/specifications`
                         do
-                            if [[ -d "specifications/${folder}" ]];
+                            if [[ -f "specifications/${folder}" ]];
                                 then
                                     rm -rf specifications/${folder}
                             fi
                             echo "Moving /tmp/specifications/${folder} to specifications"
                             mv "/tmp/specifications/${folder}" "specifications/${folder}"
+                            rm "specifications/${folder}/${folder}.yml"
                     done
                     # Copy jekyll templates to static
                     cp -R /tmp/src/.circleci/_includes _includes
