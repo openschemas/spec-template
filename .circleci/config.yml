@@ -176,7 +176,7 @@ jobs:
                     mv ../out-old $PWD/archive
                     echo "2. Preparing template..."
                     # Add latest to archive
-                    cp /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
+                    mv /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
                     cp archive/specs-${REPO_VERSION}.tar.gz archive/specs-latest.tar.gz
                     # Add build folders
                     for folder in `ls /tmp/specifications`
