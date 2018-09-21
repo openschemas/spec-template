@@ -128,6 +128,9 @@ jobs:
       - checkout
       - run: *schemaenv
       - run: *schema
+      - store_artifacts:
+          path: /tmp/specifications
+          destination: specs
       - persist_to_workspace:
           root: /tmp
           paths:
