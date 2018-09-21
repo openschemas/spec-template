@@ -190,6 +190,7 @@ jobs:
                             if [[ -f "_specifications/${folder}.html" ]];
                                 then
                                     rm _specifications/${folder}.html
+                                    rm -rf "_specifications/${folder}"
                             fi
                             echo "Moving /tmp/specifications/${folder} to _specifications"
                             mv "/tmp/specifications/${folder}/${folder}.html" "_specifications/"
