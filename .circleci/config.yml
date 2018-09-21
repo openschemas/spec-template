@@ -176,6 +176,7 @@ jobs:
                     # Copy back previous files to archive
                     mv ../out-old/archive ${PWD}
                     mv ../out-old/specifications ${PWD}
+                    mkdir -p _yaml
                     echo "2. Preparing template..."
                     # Add latest to archive
                     mv /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
@@ -189,7 +190,7 @@ jobs:
                             fi
                             echo "Moving /tmp/specifications/${folder} to specifications"
                             mv "/tmp/specifications/${folder}" "specifications/${folder}"
-                            rm "specifications/${folder}/${folder}.yml"
+                            mv "specifications/${folder}/${folder}.yml" _yaml
                     done
                     # Copy jekyll templates to static
                     cp -R /tmp/src/.circleci/_includes _includes
