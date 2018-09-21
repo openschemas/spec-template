@@ -188,6 +188,8 @@ jobs:
                             echo "Moving /tmp/specifications/${folder} to ${PWD}"
                             mv "/tmp/specifications/${folder}" "${folder}"
                     done
+                    # Copy jekyll templates to static
+                    cp -R /tmp/src/.circleci/_includes _includes
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
