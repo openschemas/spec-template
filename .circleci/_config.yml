@@ -21,7 +21,6 @@ name: OpenSchemas
 markdown: kramdown
 
 plugins:
- - jekyll-redirect-from
  - jekyll-sitemap
 
 # Collections

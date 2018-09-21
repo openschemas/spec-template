@@ -18,12 +18,9 @@ the repository here. </p>
       <thead>
       <tr>
       <th>Name</th>
-      <th style="text-align: center;">Group</th>
       <th style="text-align: center;">Use Cases</th>
-      <th style="text-align: center;">Cross Walk</th>
       <th style="text-align: center;">Task &amp; Issues</th>
       <th style="text-align: center;">Examples</th>
-      <th style="text-align: center;">Live Deploys</th>
       </tr>
       </thead>
       <tbody>
@@ -41,55 +38,55 @@ the repository here. </p>
           <td class="spec_links">
             {% if spec.use_cases_url == '' %}
             <a>
-            <img src="/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases"  style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases"  style="filter: grayscale(100%);">
             </a>
             {%else%}
             <a href="{{spec.use_cases_url}}">
-            <img src="/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases">
+            <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases">
             </a>
             {%endif%}
           </td>
           <td class="spec_links">
             {% if spec.cross_walk_url == '' %}
             <a>
-            <img src="/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk"  style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk"  style="filter: grayscale(100%);">
             </a>
             {%else%}
             <a href="{{spec.cross_walk_url}}" target="_blank">
-            <img src="/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk">
+            <img src="https://openschemas.github.io/assets/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk">
             </a>
             {%endif%}
           </td>
           <td class="spec_links">
             {% if spec.gh_tasks == '' %}
             <a>
-            <img src="/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues" style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues" style="filter: grayscale(100%);">
             </a>
             {% else %}
             <a href="{{spec.gh_tasks}}" target="_blank">
-            <img src="/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues">
+            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues">
             </a>
             {% endif %}
           </td>
           <td class="spec_links">
             {% if spec.spec_info.full_example == '' %}
             <a>
-            <img src="/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
             </a>
             {% else %}
             <a href="{{spec.spec_info.full_example}}" target="_blank">
-            <img src="/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
+            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
             </a>
             {% endif %}
           </td>
           <td class="spec_links">
             {% if spec.live_deploy == '' %}
             <a>
-            <img src="/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
             </a>
             {% else %}
             <a href="{{spec.live_deploy}}">
-            <img src="/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
+            <img src="https://openschemas.github.io/assets/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
             </a>
             {% endif %}
           </td>
@@ -126,11 +123,11 @@ the repository here. </p>
         <td class="spec_links">
             {% if spec.gh_tasks == '' %}
               <a>
-                <img src="/images/specs_tasks.png" alt="BioSchemas {{ spec.name }} Github Tasks or Issues" style="filter: grayscale(100%);">
+                <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.name }} Github Tasks or Issues" style="filter: grayscale(100%);">
               </a>
             {% else %}
               <a href="{{spec.gh_tasks}}">
-                <img src="/images/specs_tasks.png" alt="BioSchemas {{ spec.name }} Github Tasks or Issues">
+                <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.name }} Github Tasks or Issues">
               </a>
             {% endif %}
         </td>
