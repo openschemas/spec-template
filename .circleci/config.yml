@@ -195,6 +195,7 @@ jobs:
                     cp -R /tmp/src/.circleci/_layouts _layouts
                     cp /tmp/src/.circleci/_config.yml _config.yml
                     cp /tmp/src/.circleci/specifications.md specifications.md
+                    mv specifications _specifications 
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
