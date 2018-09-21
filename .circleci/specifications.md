@@ -28,7 +28,7 @@ the repository here. </p>
       {% for spec in prof_specs %}
       <tr>
           {% assign date_time = spec.spec_info.version_date %}
-          <th><a href="/specifications/{{ spec.name }}" title="{{ spec.spec_info.subtitle }}">{{ spec.name }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
+          <th><a href="{{ site.github.url }}/specifications/{{ spec.name }}/" title="{{ spec.spec_info.subtitle }}">{{ spec.name }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
           <td class="spec_links">
             <a href="{{ spec.use_cases_url }}">
             <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View {{ spec.spec_info.name }} Use Cases"></a>
