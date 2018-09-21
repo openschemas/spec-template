@@ -28,65 +28,30 @@ the repository here. </p>
       {% for spec in prof_specs %}
       <tr>
           {% assign date_time = spec.spec_info.version_date %}
-          <th><a href="/specifications/{{spec.name}}" title="{{ spec.spec_info.subtitle }}">{{ spec.spec_info.title }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
-          <td>
-            {% assign group = site.groups | where:"identifier", spec.group %}
-            {% for g in group %}
-            <a href="{{g.url}}">{{g.name}}</a>
-            {% endfor %}
-          </td>
+          <th><a href="/specifications/{{ spec.name }}" title="{{ spec.spec_info.subtitle }}">{{ spec.spec_info.property }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
           <td class="spec_links">
-            {% if spec.use_cases_url == '' %}
-            <a>
-            <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases"  style="filter: grayscale(100%);">
-            </a>
-            {%else%}
-            <a href="{{spec.use_cases_url}}">
-            <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View BioSchemas {{ spec.spec_info.title }} Use Cases">
-            </a>
-            {%endif%}
-          </td>
-          <td class="spec_links">
-            {% if spec.cross_walk_url == '' %}
-            <a>
-            <img src="https://openschemas.github.io/assets/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk"  style="filter: grayscale(100%);">
-            </a>
-            {%else%}
-            <a href="{{spec.cross_walk_url}}" target="_blank">
-            <img src="https://openschemas.github.io/assets/images/cross_walk.png" alt="View BioSchemas {{ spec.spec_info.title }} Cross Walk">
-            </a>
-            {%endif%}
+            <a href="{{ spec.use_cases_url }}">
+            <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View {{ spec.spec_info.name }} Use Cases"></a>
           </td>
           <td class="spec_links">
             {% if spec.gh_tasks == '' %}
             <a>
-            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues" style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="{{ spec.spec_info.property }} Github Tasks or Issues" style="filter: grayscale(100%);">
             </a>
             {% else %}
-            <a href="{{spec.gh_tasks}}" target="_blank">
-            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="BioSchemas {{ spec.spec_info.title }} Github Tasks or Issues">
+            <a href="{{ spec.gh_tasks }}" target="_blank">
+            <img src="https://openschemas.github.io/assets/images/specs_tasks.png" alt="Open Schemas {{ spec.spec_info.property }} Github Tasks or Issues">
             </a>
             {% endif %}
           </td>
           <td class="spec_links">
             {% if spec.spec_info.full_example == '' %}
             <a>
-            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
+            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View {{ spec.spec_info.property }} Examples" style="filter: grayscale(100%);">
             </a>
             {% else %}
             <a href="{{spec.spec_info.full_example}}" target="_blank">
-            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
-            </a>
-            {% endif %}
-          </td>
-          <td class="spec_links">
-            {% if spec.live_deploy == '' %}
-            <a>
-            <img src="https://openschemas.github.io/assets/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples" style="filter: grayscale(100%);">
-            </a>
-            {% else %}
-            <a href="{{spec.live_deploy}}">
-            <img src="https://openschemas.github.io/assets/images/live_deploy.png" alt="View BioSchemas {{ spec.spec_info.title }} Examples">
+            <img src="https://openschemas.github.io/assets/images/spec_examples.png" alt="View {{ spec.spec_info.property }} Examples">
             </a>
             {% endif %}
           </td>
