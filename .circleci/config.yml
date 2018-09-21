@@ -162,7 +162,7 @@ jobs:
                     mkdir -p ../out-old/archive
                     mkdir -p archive
                     mkdir -p specifications
-                    mv specifications ../out-old/specifications
+                    mv specifications ../out-old/
                     # Keep archive contents
                     for ext in tar.gz
                         do
