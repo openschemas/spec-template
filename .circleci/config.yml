@@ -173,10 +173,9 @@ jobs:
                     git rm -rf .
                     # ensure that github pages are ignored
                     mkdir -p .circleci && cp -a ../.circleci/. .circleci/.
-                    # Copy Github pages here
                     # Copy back previous files to archive
-                    mv ../out-old $PWD/archive
-                    mv ../out-old/specifications ${PWD}/specifications
+                    mv ../out-old/archive ${PWD}
+                    mv ../out-old/specifications ${PWD}
                     echo "2. Preparing template..."
                     # Add latest to archive
                     mv /tmp/specifications/specs-${REPO_VERSION}.tar.gz archive/
