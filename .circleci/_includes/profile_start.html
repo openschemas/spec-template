@@ -24,9 +24,8 @@
    This is a new {{ page.spec_type }} that fits into the schema.org hierarchy as follows:
    <br />
    <br />
-   {%for branch_name in page.hierarchy %}
+   {% for branch_name in page.hierarchy %}
    <a href="http://schema.org/{{ branch_name }}">{{ branch_name }}</a>
-   {% endif %}
    {%if forloop.index < page.hierarchy.size%}
    &gt;
    {%endif%}

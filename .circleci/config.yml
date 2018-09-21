@@ -161,6 +161,7 @@ jobs:
                     git checkout gh-pages || git checkout --orphan gh-pages
                     mkdir -p ../out-old
                     mkdir -p archive
+                    mkdir -p specifications
                     # Keep archive contents
                     for ext in tar.gz
                         do
@@ -185,11 +186,13 @@ jobs:
                                 then
                                     rm -rf ${folder}
                             fi
-                            echo "Moving /tmp/specifications/${folder} to ${PWD}"
-                            mv "/tmp/specifications/${folder}" "${folder}"
+                            echo "Moving /tmp/specifications/${folder} to ${PWD}/specifications"
+                            mv "/tmp/specifications/${folder}" "${PWD}/specifications/${folder}"
                     done
                     # Copy jekyll templates to static
                     cp -R /tmp/src/.circleci/_includes _includes
+                    cp /tmp/src/.circleci/_config.yml _config.yml
+                    cp /tmp/src/.circleci/specifications.md specifications.md
                     git add -A;
                     git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
                     git push origin gh-pages
