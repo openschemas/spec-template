@@ -28,7 +28,7 @@ the repository here. </p>
       {% for spec in prof_specs %}
       <tr>
           {% assign date_time = spec.spec_info.version_date %}
-          <th><a href="/specifications/{{ spec.name }}" title="{{ spec.spec_info.subtitle }}">{{ spec.spec_info.property }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
+          <th><a href="/specifications/{{ spec.name }}" title="{{ spec.spec_info.subtitle }}">{{ spec.name }}</a><br />(v{{spec.spec_info.version}})<br />{{ date_time | date_to_long_string }}</th>
           <td class="spec_links">
             <a href="{{ spec.use_cases_url }}">
             <img src="https://openschemas.github.io/assets/images/use_case_spec.png" alt="View {{ spec.spec_info.name }} Use Cases"></a>
@@ -72,7 +72,6 @@ the repository here. </p>
     <thead>
     <tr>
         <th>Name</th>
-        <th style="text-align: center;">Group</th>
         <th style="text-align: center;">Task &amp; Issues</th>
     </tr>
     </thead>
@@ -81,10 +80,6 @@ the repository here. </p>
     {% for spec in  type_specs%}
     <tr>
         <th><a href="/types/{{spec.name}}" title="{{spec.subtitle}}">{{ spec.name }}</a><br />(v{{spec.version}})<br />{{spec.dateModified}}</th>
-        <td>
-        {% assign group = site.groups | where:"identifier", spec.group | first %}
-        <a href="{{group.url}}">{{group.name}}</a>
-        </td>
         <td class="spec_links">
             {% if spec.gh_tasks == '' %}
               <a>
