@@ -1,7 +1,6 @@
 # OpenSchema Specification Builder Template
 
-<a target="_blank" rel="noopener noreferrer" href="https://camo.githubusercontent.com/25c1620fa292c127abbffab512258ce13b2cd655/68747470733a2f2f6f70656e736368656d61732e6769746875622e696f2f6173736574732f696d616765732f6c6f676f732f6f70656e736368656d61732f6c6f676f5f68657861676f6e2e706e67"><img src="https://camo.githubusercontent.com/25c1620fa292c127abbffab512258ce13b2cd655/68747470733a2f2f6f70656e736368656d61732e6769746875622e696f2f6173736574732f696d616765732f6c6f676f732f6f70656e736368656d61732f6c6f676f5f68657861676f6e2e706e67" data-canonical-src="https://openschemas.github.io/assets/images/logos/openschemas/logo_hexagon.png" style="max-width:200px;"></a>
-
+![img/hexagon_square_small.png](img/hexagon_square_small.png)
 
 This is a template for the [openschemas/schema-builder](https://www.github.com/openschemas/schema-builder)
 to generate a schema.org specification using [map2model](https://www.github.com/openschemas/map2model) 
