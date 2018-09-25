@@ -76,6 +76,9 @@ schema: &schema
     command: |
         source ${BASH_ENV}
         cd /tmp/src
+        echo "0. Pulling latest OpenBases Schema Builder!"
+        echo "docker pull ${OPENBASES_CONTAINER}"
+        docker pull ${OPENBASES_CONTAINER}
         echo "1. Starting OpenBases Schema Builder!"
         echo "docker run --name schema  --entrypoint bash -dt ${OPENBASES_CONTAINER}"
         docker run --name schema  --entrypoint bash -dt "${OPENBASES_CONTAINER}"
@@ -89,8 +92,8 @@ schema: &schema
         echo "3. Generating specification files!"
         echo "Files in /data"
         docker exec schema ls /data
-        echo "docker exec schema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output"
-        docker exec schema /bin/bash /code/entrypoint.sh start --config /data/configuration.yml --folder /data/specifications --output /data/output
+        echo "docker exec schema map2model --config /data/configuration.yml --folder /data/specifications --output /data/output"
+        docker exec schema map2model --config /data/configuration.yml --folder /data/specifications --output /data/output
         echo "4. Obtaining finished files"
         mkdir -p /tmp/specifications
         echo "docker cp schema:/data/output/. /tmp/specifications"
